@@ -1,0 +1,50 @@
+/* Query 1 - What are the Top 5 Genres that most customers prefer?  /
+
+SELECT G.Name,
+       COUNT(DISTINCT C.CustomerId) AS 'No. of Customers'
+FROM Customer C
+JOIN Invoice I ON C.CustomerId = I.CustomerId
+JOIN InvoiceLine IL ON I.InvoiceId = IL.InvoiceId
+JOIN Track T ON IL.TrackId = T.TrackId
+JOIN Genre G ON T.GenreId = G.GenreId
+GROUP BY G.Name
+ORDER BY "No. of Customers" DESC
+LIMIT 5;
+
+
+/* Query 2 - Which artists have written the most Jazz Music?  /
+
+SELECT AT.Name,
+       COUNT(AT.ArtistId) AS 'Number of Jazz Songs'
+FROM Artist AS AT
+JOIN Album AS AL ON AT.ArtistId = AL.ArtistId
+JOIN Track AS T ON AL.AlbumId = T.AlbumId
+JOIN Genre AS G ON T.GenreId = G.GenreId
+WHERE G.Name = 'Jazz'
+GROUP BY AT.Name
+ORDER BY "Number of Jazz Songs" DESC
+LIMIT 5;
+
+/* Query 3 - Which albums are generating the most sales?  /
+
+SELECT AL.Title,
+       SUM(IL.UnitPrice * IL.Quantity) AS Sales
+FROM Album AS AL
+JOIN Track AS T ON AL.AlbumId = T.AlbumId
+JOIN InvoiceLine AS IL ON T.TrackId = IL.TrackId
+GROUP BY AL.AlbumId
+ORDER BY Sales DESC
+LIMIT 5;
+
+
+/* Query 4 - Which Sales Support Agent has the most sales?  /
+
+SELECT E.FirstName || ' '|| E.LastName AS 'Employee Name',
+       Round(SUM(I.Total), 2) AS 'Total Sales',
+       E.HireDate AS 'Hire Date'
+FROM Employee AS E
+JOIN Customer AS C ON E.EmployeeId = C.SupportRepId
+JOIN Invoice AS I ON C.CustomerId = I.CustomerId
+WHERE E.Title = 'Sales Support Agent'
+GROUP BY E.EmployeeId
+ORDER BY Round(SUM(I.Total), 2) DESC;
